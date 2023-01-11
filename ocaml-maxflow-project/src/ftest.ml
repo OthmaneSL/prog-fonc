@@ -33,8 +33,9 @@ let () =
   (*let graph = from_file infile in
   let graph = gmap graph int_of_string in 
   let graph = int_to_flot graph in 
-  let graph = construire_res graph in 
-  let graph = gmap graph string_of_int in
+  let graph = flot_to_string graph in 
+  (*let graph = construire_res graph in 
+  let graph = gmap graph string_of_int in*)
   let () = export outfile graph in
   ()*)
 (************************************************************)

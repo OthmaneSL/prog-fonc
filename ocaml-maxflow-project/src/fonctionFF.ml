@@ -14,12 +14,18 @@ type 'a reseau_flot = {
   puit : id;
 } 
 
-
+(* Permet de transformer un graph int en graph de flot *)
 let int_to_flot gr = gmap gr (fun c-> {actuel=0; capacite=c})
+
+(* Permet de transformer un graph flot en graph string *)
 let flot_to_string gr = gmap gr (fun f -> (string_of_int f.actuel)^"/"^(string_of_int f.capacite))
+
+(*Fonction qui permet d'ajouter sur un graphe residuel seulement les arcs dont le label est different de 0*)
 let add_arc_res gr origine dest = function  
   |0->gr 
   |nb-> new_arc gr origine dest nb 
+
+(*fonction pour construire un graph residuel*)
 
 let construire_res gr = 
   let graph_res_vide = clone_nodes gr in 
@@ -29,10 +35,14 @@ let construire_res gr =
       let nv_graph = add_arc_res gra o d fdroite in 
       add_arc_res nv_graph d o fgauche) graph_res_vide
 
+(*fonction pour trouver la plus petite capacité du chemin*)
+
 let cap_min gr chemin = List.fold_left (fun min_cap (o ,d) ->
     match (find_arc gr o d) with
     |None->raise Not_found 
     |Some x -> min x min_cap) 10000 chemin
+
+(*augmentation des capacité au maximum sur le graph flot*)
 
 let flot_update gr chemin nb = List.fold_left (fun graph (o,d) -> 
     match (find_arc graph o d) with
@@ -42,42 +52,7 @@ let flot_update gr chemin nb = List.fold_left (fun graph (o,d) ->
     | Some f -> new_arc graph o d {actuel = f.actuel+nb; capacite = f.capacite })
     gr chemin
 
-
-
-(*
-arc(x, y).
-
-chemin(x, y) :- arc(x, a), chemin(a, y).
-chemin(x, y) 
-
-let rec trouver_chemin gr orig dest = 
-
-  e_fold gr (fun graph o d-> 
-  match (find_arc gr orig d) with
-  |None->raise Not_found 
-  |Some f -> trouver_chemin gr d dest) []
-
-
-
-**)
-
-
-
-(*let rec trouver_chemin gr orig dest = 
-  (*   renvoie chemin de orig à dest   ou None si pas de chemmin*)
-  let rec loop gr orig dest acu =
-    (*let rec loop acu graph o d flot = *)
-    (Printf.printf "loop %d\n" orig ;
-     match (out_arcs gr orig) with 
-     |[]-> (Printf.printf "  None\n "; None )
-     |(d,flot)::_-> if d=dest then Some (List.rev ((orig,dest)::acu)) else 
-         (Printf.printf "  -> %d\n" d ;
-          match(loop gr d dest ((orig,d)::acu)) with 
-          |None -> None
-          |Some chemindepuisd -> Some (chemindepuisd)))
-
-  in loop gr orig dest []
-*)
+(*fonction permettant de transformer une liste d'element simple en liste de tuple pour afficher le chemin sous forme d'arcs*)
 
 let transformationliste liste = 
   let rec loop liste acu = 
@@ -88,7 +63,7 @@ let transformationliste liste =
     |Some (a::b::rest)-> loop (Some (b::rest)) ((a,b)::acu)
   in loop liste []
 
-
+(*fonction pour trouver un chemin dans le graph residuel *)
 
 let trouver_chemin gr orig dest = 
   (*   renvoie chemin de orig à dest   ou None si pas de chemmin*)
@@ -103,16 +78,12 @@ let trouver_chemin gr orig dest =
       |Some chemindepuisd -> Some (orig::chemindepuisd)
   in loop gr orig [] 
 
-
-
-
-
-
+(*fonction fulkerson *)
 
 let run gr orig dest= 
   let graph_flot = (int_to_flot gr) in
   let rec loop flot = 
-    let graph_res = construire_res graph_flot in 
+    let graph_res = construire_res flot in 
     let chemin = transformationliste(trouver_chemin graph_res orig dest ) in 
     match chemin with  
     |None -> flot 

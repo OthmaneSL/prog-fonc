@@ -11,8 +11,8 @@ edit:
 
 demo: build
 	@echo "\n==== EXECUTING ====\n"
-	./ftest.native graphs/graph1 0 5 outfile
-	dot -Tsvg fichier.dot> some-output-file.svg
+	./ftest.native graphs/graph1 0 5 /home/slaoui/Bureau/projfonc/ocaml-maxflow-project/rfinal.dot
+	dot -Tsvg rfinal.dot> some-output-file.svg
 clean:
 	-rm -rf _build/
 	-rm ftest.native

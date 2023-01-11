@@ -34,11 +34,15 @@ let cap_min gr chemin = List.fold_left (fun min_cap (o ,d) ->
     |None->raise Not_found 
     |Some x -> min x min_cap) 10000 chemin
 
-let flot_update gr chemin nb = List.fold_left (fun graph (o,d)->
-    match (find_arc graph o d) with 
-    |None->raise Not_found 
-    |Some f -> new_arc graph o d {actuel = f.actuel+nb; capacite = f.capacite }) 
-    gr chemin 
+let flot_update gr chemin nb = List.fold_left (fun graph (o,d) -> 
+    match (find_arc graph o d) with
+    | None -> (match find_arc graph d o with
+        | None -> raise Not_found
+        | Some f -> new_arc graph d o {actuel = f.actuel - nb; capacite = f.capacite})
+    | Some f -> new_arc graph o d {actuel = f.actuel+nb; capacite = f.capacite })
+    gr chemin
+
+
 
 (*
 arc(x, y).

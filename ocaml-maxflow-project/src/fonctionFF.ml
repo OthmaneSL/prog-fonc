@@ -42,7 +42,7 @@ let cap_min gr chemin = List.fold_left (fun min_cap (o ,d) ->
     |None->raise Not_found 
     |Some x -> min x min_cap) 10000 chemin
 
-(*augmentation des capacité au maximum sur le graph flot*)
+(*augmentation des capacité sur le graph flot*)
 
 let flot_update gr chemin nb = List.fold_left (fun graph (o,d) -> 
     match (find_arc graph o d) with
